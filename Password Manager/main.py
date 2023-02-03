@@ -29,9 +29,9 @@ def save():
     email = email_username_entry.get()
     password = password_entry.get()
     data_dict = {
-        website : {
-            "Email" : email,
-            "Password" : password,
+        website: {
+            "Email": email,
+            "Password": password,
         },
     }
 
@@ -42,11 +42,19 @@ def save():
                                                                      f"Password: {password}\nDo you want to save?")
 
         if confirmation:
-            with open("data.json", mode="w") as data_file:
-                json.dump(data_dict, data_file)
-
-            website_entry.delete(0, 'end')
-            password_entry.delete(0, 'end')
+            try:
+                with open("data.json", mode="r") as data_file:
+                    data = json.load(data_file)
+            except FileNotFoundError:
+                with open("data.json", mode="w") as data_file:
+                    json.dump(data_dict, data_file, indent=4)
+            else:
+                data.update(data_dict)
+                with open("data.json", mode="w") as data_file:
+                    json.dump(data, data_file, indent=4)
+            finally:
+                website_entry.delete(0, 'end')
+                password_entry.delete(0, 'end')
 
 
 # Setting up screen:
