@@ -1,8 +1,23 @@
 from tkinter import *
-import math
-import random
+from tkinter import messagebox
+from random import choice, randint, shuffle
+import pyperclip
 
+def generate_password():
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
+    password_letters = [choice(letters) for _ in range(randint(8, 10))]
+    password_symbols = [choice(symbols) for _ in range(randint(2, 4))]
+    password_numbers = [choice(numbers) for _ in range(randint(2, 4))]
+
+    password_list = password_letters + password_symbols + password_numbers
+    shuffle(password_list)
+
+    password = "".join(password_list)
+    password_entry.insert(0, password)
+    pyperclip.copy(password)
 
 
 def save():
@@ -10,11 +25,18 @@ def save():
     email = email_username_entry.get()
     password = password_entry.get()
     data_to_add = f"\nWebsite: {website}, Email: {email}, Password: {password}"
-    with open("data.txt", mode="a") as data_file:
-        data_file.write(data_to_add)
-    website_entry.delete(0, 'end')
-    password_entry.delete(0, 'end')
 
+    if len(website) == 0 or len(email) == 0 or len(password) == 0:
+        messagebox.showinfo(title="Empty fields", message="You have left certain fields empty.")
+    else:
+        confirmation = messagebox.askokcancel(title=website, message=f"Details entered:\nEmail: {email}\n"
+                                                                     f"Password: {password}\nDo you want to save?")
+
+        if confirmation:
+            with open("data.txt", mode="a") as data_file:
+                data_file.write(data_to_add)
+            website_entry.delete(0, 'end')
+            password_entry.delete(0, 'end')
 
 
 # Setting up screen:
@@ -58,12 +80,12 @@ email_username_entry.grid(row=2, column=1, columnspan=2)
 
 email_username_entry.insert(0, "sample_email@gmail.com")
 
-password_entry = Entry(width=32,show="*")
+password_entry = Entry(width=32)
 password_entry.grid(row=3, column=1)
 
 # Buttons:
 
-generate_password_button = Button(text="Generate Password")
+generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(row=3, column=2)
 
 add_button = Button(text="Add", width=43, command=save)
