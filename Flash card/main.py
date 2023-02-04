@@ -4,12 +4,25 @@ import pandas
 
 data = pandas.read_csv("data/french_words.csv")
 data_dict = data.to_dict(orient="records")
+current_card = {}
 
 
-def new_words():
-    next_word = random.choice(data_dict)
-    canvas.itemconfig(language, text="French")
-    canvas.itemconfig(word, text=next_word["French"])
+def switch():
+    canvas.itemconfig(canvas_image, image=card_back)
+    canvas.itemconfig(language, text="English", fill="white")
+    canvas.itemconfig(word, text=current_card["English"], fill="white")
+
+
+def new_word():
+    global current_card, timer
+    window.after_cancel(timer)
+    current_card = random.choice(data_dict)
+    canvas.itemconfig(language, text="French", fill="black")
+    canvas.itemconfig(word, text=current_card["French"], fill="black")
+    canvas.itemconfig(canvas_image, image=card_front)
+    timer = window.after(3000, switch)
+
+
 
 
 # APP CONSTANTS:
@@ -18,6 +31,9 @@ BACKGROUND_COLOR = "#B1DDC6"
 window = Tk()
 window.config(bg=BACKGROUND_COLOR, padx=50, pady=50)
 window.title("Flash Card")
+timer = window.after(3000, switch)
+
+
 
 # Images and icons:
 
@@ -31,18 +47,19 @@ check_image = PhotoImage(file="images/right.png")
 
 # Canvas:
 canvas = Canvas(width=800, height=526, highlightthickness=0, bg=BACKGROUND_COLOR)
-canvas.create_image(400, 263, image=card_front)
+canvas_image = canvas.create_image(400, 263, image=card_front)
 language = canvas.create_text(400, 150, text="", font=("Ariel", 40, "italic"))
 word = canvas.create_text(400, 263, text="", font=("Ariel", 60, "bold"))
 canvas.grid(row=0, column=0, columnspan=2)
 
 # Buttons:
 
-unknown_button = Button(image=cross_image, highlightthickness=0, command=new_words)
+unknown_button = Button(image=cross_image, highlightthickness=0, command=new_word)
 unknown_button.grid(row=1, column=0)
-known_button = Button(image=check_image, highlightthickness=0, command=new_words)
+known_button = Button(image=check_image, highlightthickness=0, command=is_known)
 known_button.grid(row=1, column=1)
 
-new_words()
+new_word()
+
 
 window.mainloop()
