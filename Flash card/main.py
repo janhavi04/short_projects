@@ -2,9 +2,18 @@ from tkinter import *
 import random
 import pandas
 
-data = pandas.read_csv("data/french_words.csv")
-data_dict = data.to_dict(orient="records")
+# APP CONSTANTS:
+BACKGROUND_COLOR = "#B1DDC6"
 current_card = {}
+to_learn = {}
+
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    original_data = pandas.read_csv("data/french_words.csv")
+    to_learn = original_data.to_dict(orient="records")
+else:
+    to_learn = data.to_dict(orient="records")
 
 
 def switch():
@@ -16,24 +25,25 @@ def switch():
 def new_word():
     global current_card, timer
     window.after_cancel(timer)
-    current_card = random.choice(data_dict)
+    current_card = random.choice(to_learn)
     canvas.itemconfig(language, text="French", fill="black")
     canvas.itemconfig(word, text=current_card["French"], fill="black")
     canvas.itemconfig(canvas_image, image=card_front)
     timer = window.after(3000, switch)
 
 
+def is_known():
+    to_learn.remove(current_card)
+    new_word()
+    print(len(to_learn))
+    data = pandas.DataFrame(to_learn)
+    data.to_csv("data/words_to_learn.csv", index=False)
 
-
-# APP CONSTANTS:
-BACKGROUND_COLOR = "#B1DDC6"
 
 window = Tk()
 window.config(bg=BACKGROUND_COLOR, padx=50, pady=50)
 window.title("Flash Card")
 timer = window.after(3000, switch)
-
-
 
 # Images and icons:
 
@@ -60,6 +70,5 @@ known_button = Button(image=check_image, highlightthickness=0, command=is_known)
 known_button.grid(row=1, column=1)
 
 new_word()
-
 
 window.mainloop()
