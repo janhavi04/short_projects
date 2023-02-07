@@ -41,7 +41,7 @@ def find_password():
 
 
 def save():
-    website = website_entry.get()
+    website = website_entry.get().strip()
     email = email_username_entry.get()
     password = password_entry.get()
     data_dict = {
@@ -129,3 +129,6 @@ add_button = Button(text="Add", width=43, command=save)
 add_button.grid(row=4, column=1, columnspan=2)
 
 window.mainloop()
+
+
+
