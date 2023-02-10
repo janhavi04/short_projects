@@ -61,7 +61,6 @@ def count_down(count):
 
 
 window = Tk()
-window.size()
 window.title("Pomodoro App")
 window.config(padx=100, pady=50, bg=YELLOW)
 icon = PhotoImage(file="icon.png")
